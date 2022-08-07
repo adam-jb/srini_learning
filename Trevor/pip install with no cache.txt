@@ -1,0 +1,44 @@
+
+
+pip seems to be installing using cache even with --no-cache-dir. So the versions needed (python 2 version) aren't being installed. Getting f string errors inside the container after build.
+
+
+
+# Add --no-cache-dir before install
+pip --no-cache-dir install scipy
+pip install PACKAGE --no-cache-dir
+
+# could also purge the cache afterwards as a hack
+pip cache purge
+
+
+
+
+## to get cache directory: doesnt work too well when in $(), but runs fine as 'pip cache dir' if run directly in terminal
+a=$(`echo $(pip cache dir)`)
+echo $a
+
+
+
+
+
+## one approach to not caching files in flask: https://stackoverflow.com/questions/34066804/disabling-caching-in-flask
+@app.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
+
+
+# another approach to try
+app = Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+
+
