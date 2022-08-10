@@ -1,4 +1,27 @@
 
+
+# hierarchical linear models; perhaps in time series
+# statistic test for whether data has any time clustering
+
+# multilevel regression: https://www.coursera.org/lecture/mlm/multilevel-regression-in-r-hAIUy
+
+
+
+
+
+# make model on all data
+# feature engineering
+# scaling data so centred around each individual
+
+
+# fixed effects
+# sensitivity metric for model
+
+
+# step_zv
+
+
+
 library(tidymodels)
 library(dplyr)
 library(ggplot2)
@@ -93,6 +116,53 @@ fit(lr_wf, data=iris[1:100,]) %>%
 split_iris <- initial_split(iris, prop = 0.8, strata = 'Sepal.Length')
 train_set <- training(split_iris)
 test_set <- testing(split_iris)
+
+
+
+
+
+
+
+# VIF ---------------------------------------------------------------------
+
+library(car)
+lm(Sepal.Length ~ ., iris %>% select(-Species)) %>%
+  vif() %>%
+  barplot(main = "VIF Values", horiz = F, col = "steelblue")
+abline(h = 5, lwd = 3, lty = 2)x
+
+
+
+
+
+# iris median impute all cols ---------------------------------------------
+
+iris_for_impute <- iris
+iris_for_impute[c(1, 51, 101),1:4] <- NA_real_  # make a row NA for each category
+
+imputed_ames <-
+  recipe(Sepal.Length ~ ., data = iris_for_impute) %>%
+  step_impute_linear(
+    Sepal.Width,
+    #all_numeric_predictors(),   # doesnt impute Sepal.Length as its target in recipe
+    impute_with = imp_vars(Species)
+  ) %>%
+  prep(iris_for_impute)
+
+imputed <- bake(imputed_ames, new_data = iris_for_impute) %>% head()
+
+imputed[1:10,]
+imputed[49:53,]
+
+
+
+
+# BMLM --------------------------------------------------------------------
+
+
+library(bmlm)
+
+
 
 
 
